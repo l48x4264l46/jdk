@@ -46,12 +46,14 @@ public final class Short extends Number implements Comparable<Short> {
      * A constant holding the minimum value a {@code short} can
      * have, -2<sup>15</sup>.
      */
+    // 占用两个字节：所以一共有8 * 2 = 16 位，其中一位用于表示符号， 2 ^ 15
     public static final short   MIN_VALUE = -32768;
 
     /**
      * A constant holding the maximum value a {@code short} can
      * have, 2<sup>15</sup>-1.
      */
+    // 需要一位表示0，所以为 2 ^ 15 - 1
     public static final short   MAX_VALUE = 32767;
 
     /**
@@ -70,6 +72,7 @@ public final class Short extends Number implements Comparable<Short> {
      * @see java.lang.Integer#toString(int)
      */
     public static String toString(short s) {
+        // 与byte类似，由于int的长度比short的长，所以可以转为int，然后调用int的toString方法
         return Integer.toString((int)s, 10);
     }
 
@@ -115,6 +118,7 @@ public final class Short extends Number implements Comparable<Short> {
      */
     public static short parseShort(String s, int radix)
         throws NumberFormatException {
+        // 先将short转换为int再判断大小是否溢出，
         int i = Integer.parseInt(s, radix);
         if (i < MIN_VALUE || i > MAX_VALUE)
             throw new NumberFormatException(
@@ -141,6 +145,7 @@ public final class Short extends Number implements Comparable<Short> {
      *          contain a parsable {@code short}.
      */
     public static short parseShort(String s) throws NumberFormatException {
+        // 默认采用的是10进制转换。
         return parseShort(s, 10);
     }
 
@@ -200,9 +205,11 @@ public final class Short extends Number implements Comparable<Short> {
         return valueOf(s, 10);
     }
 
+    // short 缓存
     private static class ShortCache {
         private ShortCache(){}
 
+        // -128 ~ 127 128表示最小值，127表示最大值， 1 表示0
         static final Short cache[] = new Short[-(-128) + 127 + 1];
 
         static {
@@ -228,11 +235,13 @@ public final class Short extends Number implements Comparable<Short> {
      * @since  1.5
      */
     public static Short valueOf(short s) {
+        // 因为做了缓存，所以需要偏移128位
         final int offset = 128;
         int sAsInt = s;
         if (sAsInt >= -128 && sAsInt <= 127) { // must cache
             return ShortCache.cache[sAsInt + offset];
         }
+
         return new Short(s);
     }
 
@@ -279,6 +288,7 @@ public final class Short extends Number implements Comparable<Short> {
      * @see java.lang.Short#parseShort(java.lang.String, int)
      */
     public static Short decode(String nm) throws NumberFormatException {
+        // 由于int的长度比short长，所以先将String转位然后判断是否溢出
         int i = Integer.decode(nm);
         if (i < MIN_VALUE || i > MAX_VALUE)
             throw new NumberFormatException(

@@ -52,6 +52,7 @@ public final class Float extends Number implements Comparable<Float> {
      * {@code float}. It is equal to the value returned by
      * {@code Float.intBitsToFloat(0x7f800000)}.
      */
+    // 正无穷大
     public static final float POSITIVE_INFINITY = 1.0f / 0.0f;
 
     /**
@@ -59,6 +60,7 @@ public final class Float extends Number implements Comparable<Float> {
      * {@code float}. It is equal to the value returned by
      * {@code Float.intBitsToFloat(0xff800000)}.
      */
+    // 负无穷大
     public static final float NEGATIVE_INFINITY = -1.0f / 0.0f;
 
     /**
@@ -66,6 +68,7 @@ public final class Float extends Number implements Comparable<Float> {
      * {@code float}.  It is equivalent to the value returned by
      * {@code Float.intBitsToFloat(0x7fc00000)}.
      */
+    // 非数
     public static final float NaN = 0.0f / 0.0f;
 
     /**
@@ -75,6 +78,7 @@ public final class Float extends Number implements Comparable<Float> {
      * {@code 0x1.fffffeP+127f} and also equal to
      * {@code Float.intBitsToFloat(0x7f7fffff)}.
      */
+    // 最大值0 11111111 11111111111111111111111
     public static final float MAX_VALUE = 0x1.fffffeP+127f; // 3.4028235e+38f
 
     /**

@@ -47,12 +47,14 @@ public final class Byte extends Number implements Comparable<Byte> {
      * A constant holding the minimum value a {@code byte} can
      * have, -2<sup>7</sup>.
      */
+    // 最小值 占一个字节 八位 去除一个符号位 只取 2^7 = 128
     public static final byte   MIN_VALUE = -128;
 
     /**
      * A constant holding the maximum value a {@code byte} can
      * have, 2<sup>7</sup>-1.
      */
+    // 最大值 取出一个表示0，所以最大值位 2^7 - 1
     public static final byte   MAX_VALUE = 127;
 
     /**
@@ -71,9 +73,11 @@ public final class Byte extends Number implements Comparable<Byte> {
      * @see java.lang.Integer#toString(int)
      */
     public static String toString(byte b) {
+        // 调用Integer的同String方法，指定进制为10
         return Integer.toString((int)b, 10);
     }
 
+    // 与Integer相同，所有的btye都做了缓存
     private static class ByteCache {
         private ByteCache(){}
 
@@ -99,7 +103,9 @@ public final class Byte extends Number implements Comparable<Byte> {
      * @since  1.5
      */
     public static Byte valueOf(byte b) {
+        // 定义位移偏量，由于byte的最小值为-128，又因为byte做了缓存，所以需要偏移这么128
         final int offset = 128;
+        // 从缓存中获取数据，较少内存回收。
         return ByteCache.cache[(int)b + offset];
     }
 
@@ -146,10 +152,14 @@ public final class Byte extends Number implements Comparable<Byte> {
      */
     public static byte parseByte(String s, int radix)
         throws NumberFormatException {
+        // 调用integer的转换方法 获取数字
         int i = Integer.parseInt(s, radix);
+        // 如果转换的值超出了byte的范围。则抛出异常。
         if (i < MIN_VALUE || i > MAX_VALUE)
             throw new NumberFormatException(
                 "Value out of range. Value:\"" + s + "\" Radix:" + radix);
+        // 将最终转换的值强转为byte，
+        // 因为前面已经从限定了范围，所以可以直接强转，不用担心丢失的问题。
         return (byte)i;
     }
 
@@ -172,6 +182,7 @@ public final class Byte extends Number implements Comparable<Byte> {
      *                  contain a parsable {@code byte}.
      */
     public static byte parseByte(String s) throws NumberFormatException {
+        // 默认使用10进制转换
         return parseByte(s, 10);
     }
 
@@ -274,6 +285,7 @@ public final class Byte extends Number implements Comparable<Byte> {
      * @see java.lang.Byte#parseByte(java.lang.String, int)
      */
     public static Byte decode(String nm) throws NumberFormatException {
+       // 将String转换为integer ，然后判断转换后的是否超出了限制
         int i = Integer.decode(nm);
         if (i < MIN_VALUE || i > MAX_VALUE)
             throw new NumberFormatException(
@@ -474,7 +486,10 @@ public final class Byte extends Number implements Comparable<Byte> {
      *         conversion
      * @since 1.8
      */
+    // 无符号转换为int
     public static int toUnsignedInt(byte x) {
+        // 0xff = 0000 0000 0000 0000 0000 0000 1111 1111
+        // 因为byte占用一位 8个字节
         return ((int) x) & 0xff;
     }
 
@@ -495,6 +510,7 @@ public final class Byte extends Number implements Comparable<Byte> {
      * @since 1.8
      */
     public static long toUnsignedLong(byte x) {
+        // 与上方法类似
         return ((long) x) & 0xffL;
     }
 

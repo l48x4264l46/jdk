@@ -246,6 +246,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @since   JDK1.0.2
      */
     public static String toHexString(int i) {
+        // 十六进制是吧4位当一位使用
         return toUnsignedString0(i, 4);
     }
 
@@ -284,6 +285,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @since   JDK1.0.2
      */
     public static String toOctalString(int i) {
+        // 八进制是按3个位一位使用的
         return toUnsignedString0(i, 3);
     }
 
@@ -316,6 +318,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @since   JDK1.0.2
      */
     public static String toBinaryString(int i) {
+        // 二进制就是按一个计算获得的数
         return toUnsignedString0(i, 1);
     }
 
@@ -324,12 +327,21 @@ public final class Integer extends Number implements Comparable<Integer> {
      */
     private static String toUnsignedString0(int val, int shift) {
         // assert shift > 0 && shift <=5 : "Illegal shift value";
+        // 获取有效的位数
         int mag = Integer.SIZE - Integer.numberOfLeadingZeros(val);
+
+        // 计算准换后需要的数组长度，如果使用mag / shift，由于直接截断的原理，那么实际计算的
+        // 长度可能会小于需要的长度，所以要补上一个，如果按照我的计算方式可能会使用
+        // msg / shift + ((msg % shift) == 0 ? 0 : 1) 但是这样至少需要四次运算才可以
+        // +(shift - 1) 的目的是将剩余被截断的补成一个大于等于 shift 小于 两倍shift的数字，
+        // 这样就可以达到剩余的只能补充一个，如果没有剩余就会截断为0
         int chars = Math.max(((mag + (shift - 1)) / shift), 1);
         char[] buf = new char[chars];
 
+        // 格式化
         formatUnsignedInt(val, shift, buf, 0, chars);
 
+        // 使用String的构造方法生成一个String，该方法是default的，只能在lang包下使用
         // Use special constructor which takes over "buf".
         return new String(buf, true);
     }
@@ -344,12 +356,30 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @return the lowest character  location used
      */
      static int formatUnsignedInt(int val, int shift, char[] buf, int offset, int len) {
+        // 末尾标记
         int charPos = len;
+        // 计算mask的作用是计算每个进制按二进制计算的最大值：
+         // 比如：2进制的最大值是0001
+         // 8进制的最大值是0011
+         // 16进制的最大值是0111
+         // 按反推是可以得到结果的，但是暂时无法从原理出发理解
         int radix = 1 << shift;
         int mask = radix - 1;
+
+
         do {
+            // 按照mask的结果与进制之间的关系，这里每次获取的都是按进制去最后几位，
+            // 如果是二进制就取一个，八进制就取出三个，十六进制就取出末尾3个。取出的原理是按
+            // 按位与，因为mask的二进制排列前面的都是0，所以不管val的二进制排列前面的值是多少
+            // 最终都是0，这样就获取了val中只想要的后几位数的值。 然后将取出的值计算在
+            // 十六进制下的值（因为十六进制的表示范围包含了八进制的表示范围）
+            // 然后将该值放到数组的指定位置（offset + --charPos 的作用就是计算后从后向前放）。
+            // 每次取出完之后都会将val无符号向右位移刚刚取出的位数，这样就吧已经取出的位数给去除了。
             buf[offset + --charPos] = Integer.digits[val & mask];
             val >>>= shift;
+
+            // 入宫val等于0,说明val已经取完了所有的位数。
+            // 如果charPos小于0，则表示需要取出的位数已经完成了
         } while (val != 0 && charPos > 0);
 
         return charPos;
@@ -411,6 +441,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @return  a string representation of the argument in base&nbsp;10.
      */
     public static String toString(int i) {
+        // 优化方法，如果是最小值，则直接返回最小值的String串。
         if (i == Integer.MIN_VALUE)
             return "-2147483648";
         int size = (i < 0) ? stringSize(-i) + 1 : stringSize(i);
@@ -457,9 +488,12 @@ public final class Integer extends Number implements Comparable<Integer> {
         }
 
         // Generate two digits per iteration
-        while (i >= 65536) {
+        // 65536 的二进制为：0001 0000 0000 0000 0000
+                while (i >= 65536) {
             q = i / 100;
         // really: r = i - (q * 100);
+                    // (q << 6) + (q << 5) + (q << 2) = 64 * q + 32 * q + 4 * q = 100 * q
+                    //
             r = i - ((q << 6) + (q << 5) + (q << 2));
             i = q;
             buf [--charPos] = DigitOnes[r];
@@ -808,6 +842,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * sun.misc.VM class.
      */
 
+    // int 数字缓存
     private static class IntegerCache {
         static final int low = -128;
         static final int high;
@@ -858,6 +893,7 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @since  1.5
      */
     public static Integer valueOf(int i) {
+        // 如果转换的数组在缓存区内 就直接取缓存区的数据，否则创建要给新对象
         if (i >= IntegerCache.low && i <= IntegerCache.high)
             return IntegerCache.cache[i + (-IntegerCache.low)];
         return new Integer(i);
@@ -1184,13 +1220,17 @@ public final class Integer extends Number implements Comparable<Integer> {
      * @see java.lang.Integer#parseInt(java.lang.String, int)
      */
     public static Integer decode(String nm) throws NumberFormatException {
+        // 定义转换进制，默认为10进制
         int radix = 10;
         int index = 0;
+        // 是否为负数
         boolean negative = false;
         Integer result;
 
+        // 如果String串长度为0，则表示为空，抛出异常
         if (nm.length() == 0)
             throw new NumberFormatException("Zero length string");
+        // 获取第一个字符，该目的是确定是否为负数
         char firstChar = nm.charAt(0);
         // Handle sign, if present
         if (firstChar == '-') {
@@ -1200,6 +1240,7 @@ public final class Integer extends Number implements Comparable<Integer> {
             index++;
 
         // Handle radix specifier, if present
+        // 确定该String采用的是什么进制
         if (nm.startsWith("0x", index) || nm.startsWith("0X", index)) {
             index += 2;
             radix = 16;
@@ -1213,11 +1254,14 @@ public final class Integer extends Number implements Comparable<Integer> {
             radix = 8;
         }
 
+        // 如果该字符串符号已经确定，进制也已经确定，接下来的字符 还是符号则表示符号位值错误了，抛出异常
         if (nm.startsWith("-", index) || nm.startsWith("+", index))
             throw new NumberFormatException("Sign character in wrong position");
 
         try {
+            // 按照指定的进制，将取出符号的数字部分转换为integer
             result = Integer.valueOf(nm.substring(index), radix);
+            // 添加上符号
             result = negative ? Integer.valueOf(-result.intValue()) : result;
         } catch (NumberFormatException e) {
             // If number is Integer.MIN_VALUE, we'll end up here. The next line
@@ -1443,7 +1487,9 @@ public final class Integer extends Number implements Comparable<Integer> {
         if (i >>> 28 == 0) { n +=  4; i <<=  4; }
         if (i >>> 30 == 0) { n +=  2; i <<=  2; }
 
-        // i >>> 31 表示获取最高位的
+        // i >>> 31 表示获取最高位的数字，
+        // 如果是负数则i >>> 31的结果为 1，其他正数为0，所以如果是
+        // 负数则 n = 1,这时最高位 0 的数量应该为0 ，但是n默认是1 所以减去 1 就等于0，
         n -= i >>> 31;
         return n;
     }
