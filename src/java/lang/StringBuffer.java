@@ -103,6 +103,7 @@ import java.util.Arrays;
      * A cache of the last value returned by toString. Cleared
      * whenever the StringBuffer is modified.
      */
+    // 表示该属性不会序列化
     private transient char[] toStringCache;
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
@@ -112,7 +113,9 @@ import java.util.Arrays;
      * Constructs a string buffer with no characters in it and an
      * initial capacity of 16 characters.
      */
+    // 空参构造 默认初始化容量为16
     public StringBuffer() {
+        // 初始化容量为16 与hashmap相同
         super(16);
     }
 
@@ -135,6 +138,7 @@ import java.util.Arrays;
      *
      * @param   str   the initial contents of the buffer.
      */
+    // 初始化要保证与大于使用的长度16
     public StringBuffer(String str) {
         super(str.length() + 16);
         append(str);
@@ -159,6 +163,7 @@ import java.util.Arrays;
     }
 
     @Override
+    // ！使用同步修饰 保证多线程操作时的安全
     public synchronized int length() {
         return count;
     }
@@ -170,6 +175,7 @@ import java.util.Arrays;
 
 
     @Override
+    //
     public synchronized void ensureCapacity(int minimumCapacity) {
         super.ensureCapacity(minimumCapacity);
     }

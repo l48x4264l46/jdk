@@ -137,6 +137,7 @@ import sun.security.util.SecurityConstants;
  * @see     #stop()
  * @since   JDK1.0
  */
+//
 public
 class Thread implements Runnable {
     /* Make sure registerNatives is the first thing <clinit> does. */
@@ -145,8 +146,11 @@ class Thread implements Runnable {
         registerNatives();
     }
 
+    // 线程名称
     private volatile String name;
+    // 优先级
     private int            priority;
+    //
     private Thread         threadQ;
     private long           eetop;
 

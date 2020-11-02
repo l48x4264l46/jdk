@@ -34,6 +34,7 @@ package java.lang;
  * @see     java.lang.Class
  * @since   JDK1.0
  */
+// 所有类的父类
 public class Object {
 
     private static native void registerNatives();
@@ -145,6 +146,7 @@ public class Object {
      * @see     #hashCode()
      * @see     java.util.HashMap
      */
+    // equals 默认比较引用地址值
     public boolean equals(Object obj) {
         return (this == obj);
     }
@@ -209,6 +211,7 @@ public class Object {
      *               be cloned.
      * @see java.lang.Cloneable
      */
+    // 浅拷贝方法
     protected native Object clone() throws CloneNotSupportedException;
 
     /**
@@ -232,6 +235,7 @@ public class Object {
      *
      * @return  a string representation of the object.
      */
+    // 默认是类名 + 15进制的地址值
     public String toString() {
         return getClass().getName() + "@" + Integer.toHexString(hashCode());
     }
@@ -268,6 +272,7 @@ public class Object {
      * @see        java.lang.Object#notifyAll()
      * @see        java.lang.Object#wait()
      */
+    // 线程中的唤醒方法，表示唤醒当前线程
     public final native void notify();
 
     /**
@@ -292,6 +297,7 @@ public class Object {
      * @see        java.lang.Object#notify()
      * @see        java.lang.Object#wait()
      */
+    // 唤醒所有的线程，让他们同时去竞争CPU使用
     public final native void notifyAll();
 
     /**
@@ -379,6 +385,7 @@ public class Object {
      * @see        java.lang.Object#notify()
      * @see        java.lang.Object#notifyAll()
      */
+    // 线程等待方法，参数为具体等待时间，计时完成时，与其进程竞争CPU使用
     public final native void wait(long timeout) throws InterruptedException;
 
     /**
@@ -498,6 +505,7 @@ public class Object {
      * @see        java.lang.Object#notify()
      * @see        java.lang.Object#notifyAll()
      */
+    // 等待0秒后推出，这时候应该是让出使用CPU使用权
     public final void wait() throws InterruptedException {
         wait(0);
     }

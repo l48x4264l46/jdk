@@ -48,6 +48,7 @@ import java.io.IOException;
  *
  * @since 1.5
  */
+/**append接口，用于定义append方法*/
 public interface Appendable {
 
     /**

@@ -813,6 +813,7 @@ public final class String
      *            <li>{@code dstBegin+(srcEnd-srcBegin)} is larger than
      *                {@code dst.length}</ul>
      */
+    // 将字符串放到指定的数组中
     public void getChars(int srcBegin, int srcEnd, char dst[], int dstBegin) {
         if (srcBegin < 0) {
             throw new StringIndexOutOfBoundsException(srcBegin);

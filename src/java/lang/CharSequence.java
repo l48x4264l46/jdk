@@ -55,7 +55,7 @@ import java.util.stream.StreamSupport;
  * @since 1.4
  * @spec JSR-51
  */
-
+/**字符串序列类，定义字符串相关的操作*/
 public interface CharSequence {
 
     /**
