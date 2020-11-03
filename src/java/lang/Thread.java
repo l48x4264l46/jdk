@@ -150,11 +150,13 @@ class Thread implements Runnable {
     private volatile String name;
     // 优先级
     private int            priority;
-    //
+    // 无用变量
     private Thread         threadQ;
+    // 无用变量
     private long           eetop;
 
     /* Whether or not to single_step this thread. */
+    // 无用变量
     private boolean     single_step;
 
     /* Whether or not the thread is a daemon thread. */

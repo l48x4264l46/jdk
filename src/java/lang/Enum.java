@@ -59,6 +59,7 @@ public abstract class Enum<E extends Enum<E>>
      * Most programmers should use the {@link #toString} method rather than
      * accessing this field.
      */
+    // 名称
     private final String name;
 
     /**

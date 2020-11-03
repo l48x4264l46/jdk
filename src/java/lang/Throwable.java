@@ -111,6 +111,7 @@ import  java.util.*;
  * @jls 11.2 Compile-Time Checking of Exceptions
  * @since JDK1.0
  */
+// 所有异常以及错误的超类
 public class Throwable implements Serializable {
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
     private static final long serialVersionUID = -3042686055658047285L;
@@ -118,6 +119,7 @@ public class Throwable implements Serializable {
     /**
      * Native code saves some indication of the stack backtrace in this slot.
      */
+    // 追踪栈堆使用
     private transient Object backtrace;
 
     /**
