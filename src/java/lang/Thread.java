@@ -160,6 +160,7 @@ class Thread implements Runnable {
     private boolean     single_step;
 
     /* Whether or not the thread is a daemon thread. */
+    // 是否为守护线程
     private boolean     daemon = false;
 
     /* JVM state */
@@ -1745,10 +1746,12 @@ class Thread implements Runnable {
      * @since   1.5
      * @see #getState
      */
+    // 线程状态枚举
     public enum State {
         /**
          * Thread state for a thread which has not yet started.
          */
+        // 线程刚创建，还未执行
         NEW,
 
         /**
@@ -1757,6 +1760,11 @@ class Thread implements Runnable {
          * be waiting for other resources from the operating system
          * such as processor.
          */
+        /*表示该线程在正在JVM中，但是可能等待CPU资源
+        * 没有所谓的running状态，只有runalbe状态。
+        * 因为java线程不是系统线程。在runable状态的线程可以是已经在运行，
+        * 也有可能是等待CPU中。
+        * */
         RUNNABLE,
 
         /**
@@ -1766,6 +1774,7 @@ class Thread implements Runnable {
          * reenter a synchronized block/method after calling
          * {@link Object#wait() Object.wait}.
          */
+        // 表示该线程正处于阻塞状态，等待监视器锁。
         BLOCKED,
 
         /**
@@ -1787,6 +1796,7 @@ class Thread implements Runnable {
          * that object. A thread that has called <tt>Thread.join()</tt>
          * is waiting for a specified thread to terminate.
          */
+        // 等待中
         WAITING,
 
         /**
@@ -1801,12 +1811,14 @@ class Thread implements Runnable {
          *   <li>{@link LockSupport#parkUntil LockSupport.parkUntil}</li>
          * </ul>
          */
+        // 限时等待
         TIMED_WAITING,
 
         /**
          * Thread state for a terminated thread.
          * The thread has completed execution.
          */
+        // 线程已经终止
         TERMINATED;
     }
 
@@ -1818,6 +1830,7 @@ class Thread implements Runnable {
      * @return this thread's state.
      * @since 1.5
      */
+    // 获取当前线程情况
     public State getState() {
         // get current thread state
         return sun.misc.VM.toThreadState(threadStatus);
