@@ -111,11 +111,15 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Default initial capacity.
+     * 默认容量，也就是数组的默认大小
      */
+
     private static final int DEFAULT_CAPACITY = 10;
 
     /**
      * Shared empty array instance used for empty instances.
+     * 默认的空数组
+     *
      */
     private static final Object[] EMPTY_ELEMENTDATA = {};
 
@@ -123,6 +127,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Shared empty array instance used for default sized empty instances. We
      * distinguish this from EMPTY_ELEMENTDATA to know how much to inflate when
      * first element is added.
+     * 默认空数组
      */
     private static final Object[] DEFAULTCAPACITY_EMPTY_ELEMENTDATA = {};
 
@@ -131,29 +136,34 @@ public class ArrayList<E> extends AbstractList<E>
      * The capacity of the ArrayList is the length of this array buffer. Any
      * empty ArrayList with elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA
      * will be expanded to DEFAULT_CAPACITY when the first element is added.
+     * 实际数组
      */
     transient Object[] elementData; // non-private to simplify nested class access
 
     /**
      * The size of the ArrayList (the number of elements it contains).
-     *
+     * 当前数组使用的长度
      * @serial
      */
     private int size;
 
     /**
      * Constructs an empty list with the specified initial capacity.
+     * 带有初始化容量的构造方法
      *
      * @param  initialCapacity  the initial capacity of the list
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
+     *         ，
      */
     public ArrayList(int initialCapacity) {
         if (initialCapacity > 0) {
             this.elementData = new Object[initialCapacity];
         } else if (initialCapacity == 0) {
+            // 如果初始化大小为0，则使已经定义好的空数组
             this.elementData = EMPTY_ELEMENTDATA;
         } else {
+            // 容量不符合实际 抛出异常
             throw new IllegalArgumentException("Illegal Capacity: "+
                                                initialCapacity);
         }
@@ -161,6 +171,7 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * Constructs an empty list with an initial capacity of ten.
+     * 空参构造方法
      */
     public ArrayList() {
         this.elementData = DEFAULTCAPACITY_EMPTY_ELEMENTDATA;
@@ -170,11 +181,13 @@ public class ArrayList<E> extends AbstractList<E>
      * Constructs a list containing the elements of the specified
      * collection, in the order they are returned by the collection's
      * iterator.
+     * 集合对象作为参数的构造方法
      *
      * @param c the collection whose elements are to be placed into this list
      * @throws NullPointerException if the specified collection is null
      */
     public ArrayList(Collection<? extends E> c) {
+        // 获取参数中的数组
         elementData = c.toArray();
         if ((size = elementData.length) != 0) {
             // c.toArray might (incorrectly) not return Object[] (see 6260652)
@@ -190,12 +203,15 @@ public class ArrayList<E> extends AbstractList<E>
      * Trims the capacity of this <tt>ArrayList</tt> instance to be the
      * list's current size.  An application can use this operation to minimize
      * the storage of an <tt>ArrayList</tt> instance.
+     *  将数组中为使用的元素删除
      */
     public void trimToSize() {
+        // 该数组修改次数 + 1
         modCount++;
         if (size < elementData.length) {
             elementData = (size == 0)
               ? EMPTY_ELEMENTDATA
+                    // 将旧的数组中的内容拷贝到新的数组中
               : Arrays.copyOf(elementData, size);
         }
     }
@@ -204,10 +220,13 @@ public class ArrayList<E> extends AbstractList<E>
      * Increases the capacity of this <tt>ArrayList</tt> instance, if
      * necessary, to ensure that it can hold at least the number of elements
      * specified by the minimum capacity argument.
+     * 容量保证方法
      *
      * @param   minCapacity   the desired minimum capacity
      */
     public void ensureCapacity(int minCapacity) {
+        // 如果当前数组对象与默认空数组对象不相等，则表示该数组是已经使用过了（经过删除或者添加）
+        // 则最小值为0，如果不是，那么则表示该数组是第一次扩容。那么他的最小值就为默认容量 10
         int minExpand = (elementData != DEFAULTCAPACITY_EMPTY_ELEMENTDATA)
             // any size if not default element table
             ? 0
@@ -215,15 +234,20 @@ public class ArrayList<E> extends AbstractList<E>
             // supposed to be at default size.
             : DEFAULT_CAPACITY;
 
+        // 如果需要的最小值大于了目前的最小值 则需要扩容
         if (minCapacity > minExpand) {
             ensureExplicitCapacity(minCapacity);
         }
     }
 
+    /**计算最小角标*/
     private static int calculateCapacity(Object[] elementData, int minCapacity) {
+        // 如果当前数组与默认空数组是同一个对象，说明该对象第一次扩容（这里主要处理的是第一次初始化）
         if (elementData == DEFAULTCAPACITY_EMPTY_ELEMENTDATA) {
+            // 去取最小需要的只与默认容量的最大值
             return Math.max(DEFAULT_CAPACITY, minCapacity);
         }
+        // 否则返回最小容量值
         return minCapacity;
     }
 
@@ -231,9 +255,12 @@ public class ArrayList<E> extends AbstractList<E>
         ensureExplicitCapacity(calculateCapacity(elementData, minCapacity));
     }
 
+    /**扩容*/
     private void ensureExplicitCapacity(int minCapacity) {
+        // 操作数据次数 + 1
         modCount++;
 
+        // 如果最小容量值大于当前的数组长度，则进行扩容
         // overflow-conscious code
         if (minCapacity - elementData.length > 0)
             grow(minCapacity);
@@ -244,6 +271,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Some VMs reserve some header words in an array.
      * Attempts to allocate larger arrays may result in
      * OutOfMemoryError: Requested array size exceeds VM limit
+     * 数组的最长长度，- 8 是因为虚拟机需要保留一些头指针？？？
      */
     private static final int MAX_ARRAY_SIZE = Integer.MAX_VALUE - 8;
 
@@ -255,19 +283,27 @@ public class ArrayList<E> extends AbstractList<E>
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
+        // 记录原来的数组长度
         int oldCapacity = elementData.length;
+        // 计算出新的数组长度 = 旧长度 + 旧长度 / 2，这里可以看出每次扩容是按员原来数组的1.5倍进行扩容的。
         int newCapacity = oldCapacity + (oldCapacity >> 1);
+        // 如果最小值需要的容量大于已经扩容的容量，则新的容量按最小得知值算，要不然新的数组将无法存入数据。（不够长）
         if (newCapacity - minCapacity < 0)
             newCapacity = minCapacity;
+        // 如果扩容后的数组长度大于最长的数组，则表示此次扩容过大，需要再次确认
         if (newCapacity - MAX_ARRAY_SIZE > 0)
+            // 表示这次扩容的值比较大
             newCapacity = hugeCapacity(minCapacity);
         // minCapacity is usually close to size, so this is a win:
+        // 计算需要的之进行扩容
         elementData = Arrays.copyOf(elementData, newCapacity);
     }
 
     private static int hugeCapacity(int minCapacity) {
+        // 如果最小容量值小于了0，则表示长度已经超出了int的范围已经溢出了，则抛出内存溢出
         if (minCapacity < 0) // overflow
             throw new OutOfMemoryError();
+        // 如果需要最小的数组长度也大于最大的数组长度，则返回int的最大值，否则返回定义的最大数组长度
         return (minCapacity > MAX_ARRAY_SIZE) ?
             Integer.MAX_VALUE :
             MAX_ARRAY_SIZE;
@@ -277,6 +313,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Returns the number of elements in this list.
      *
      * @return the number of elements in this list
+     * 当前使用的长度
      */
     public int size() {
         return size;
@@ -286,6 +323,7 @@ public class ArrayList<E> extends AbstractList<E>
      * Returns <tt>true</tt> if this list contains no elements.
      *
      * @return <tt>true</tt> if this list contains no elements
+     * 该数数组是否为空，推荐是用Collections.isEmpty(),它同时会进行null判断
      */
     public boolean isEmpty() {
         return size == 0;
@@ -296,6 +334,7 @@ public class ArrayList<E> extends AbstractList<E>
      * More formally, returns <tt>true</tt> if and only if this list contains
      * at least one element <tt>e</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;e==null&nbsp;:&nbsp;o.equals(e))</tt>.
+     * 是否包含了某个元素
      *
      * @param o element whose presence in this list is to be tested
      * @return <tt>true</tt> if this list contains the specified element
@@ -310,8 +349,10 @@ public class ArrayList<E> extends AbstractList<E>
      * More formally, returns the lowest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+     * 查找某个元素出现的位置
      */
     public int indexOf(Object o) {
+        // 遍历数组查找，考虑空指针问题，需要做出空判断
         if (o == null) {
             for (int i = 0; i < size; i++)
                 if (elementData[i]==null)
@@ -330,8 +371,10 @@ public class ArrayList<E> extends AbstractList<E>
      * More formally, returns the highest index <tt>i</tt> such that
      * <tt>(o==null&nbsp;?&nbsp;get(i)==null&nbsp;:&nbsp;o.equals(get(i)))</tt>,
      * or -1 if there is no such index.
+     * 元素最后一次出现的位置
      */
     public int lastIndexOf(Object o) {
+        // 与indexOf方法类型，只不过是倒序遍历
         if (o == null) {
             for (int i = size-1; i >= 0; i--)
                 if (elementData[i]==null)
@@ -347,6 +390,7 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Returns a shallow copy of this <tt>ArrayList</tt> instance.  (The
      * elements themselves are not copied.)
+     * 克隆一个新数组（依然是浅拷贝）
      *
      * @return a clone of this <tt>ArrayList</tt> instance
      */
@@ -372,11 +416,13 @@ public class ArrayList<E> extends AbstractList<E>
      *
      * <p>This method acts as bridge between array-based and collection-based
      * APIs.
+     * // 将对象转为数组（依然是浅拷贝，注意修改时会连带修改）
      *
      * @return an array containing all of the elements in this list in
      *         proper sequence
      */
     public Object[] toArray() {
+
         return Arrays.copyOf(elementData, size);
     }
 
@@ -394,6 +440,7 @@ public class ArrayList<E> extends AbstractList<E>
      * <tt>null</tt>.  (This is useful in determining the length of the
      * list <i>only</i> if the caller knows that the list does not contain
      * any null elements.)
+     * 将指定的几何转为数组（指定的数组为参数）
      *
      * @param a the array into which the elements of the list are to
      *          be stored, if it is big enough; otherwise, a new array of the
@@ -406,10 +453,12 @@ public class ArrayList<E> extends AbstractList<E>
      */
     @SuppressWarnings("unchecked")
     public <T> T[] toArray(T[] a) {
+        // 如果当前数组的长度大于目标数组
         if (a.length < size)
             // Make a new array of a's runtime type, but my contents:
             return (T[]) Arrays.copyOf(elementData, size, a.getClass());
         System.arraycopy(elementData, 0, a, 0, size);
+        // 如果目标数组的长度大于
         if (a.length > size)
             a[size] = null;
         return a;
@@ -430,8 +479,10 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E get(int index) {
+        // 检查角标是否越界
         rangeCheck(index);
 
+        // 获取数据
         return elementData(index);
     }
 
@@ -445,6 +496,7 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E set(int index, E element) {
+        // 检查角标是否越界
         rangeCheck(index);
 
         E oldValue = elementData(index);
@@ -459,7 +511,9 @@ public class ArrayList<E> extends AbstractList<E>
      * @return <tt>true</tt> (as specified by {@link Collection#add})
      */
     public boolean add(E e) {
+        // 自组扩容方法
         ensureCapacityInternal(size + 1);  // Increments modCount!!
+        // 设置下一个值
         elementData[size++] = e;
         return true;
     }
@@ -468,18 +522,25 @@ public class ArrayList<E> extends AbstractList<E>
      * Inserts the specified element at the specified position in this
      * list. Shifts the element currently at that position (if any) and
      * any subsequent elements to the right (adds one to their indices).
+     * 在指定位置添加数据
      *
      * @param index index at which the specified element is to be inserted
      * @param element element to be inserted
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public void add(int index, E element) {
+        // 检查角标是否越界
         rangeCheckForAdd(index);
 
+        // 自主扩容
         ensureCapacityInternal(size + 1);  // Increments modCount!!
+        // **参数，原数组，开始拷贝位置，目标数组，目标数组开始位置，拷贝长度**
+        // 将目标位置后面的数据，向后移动一位，空出的位置放入目标元素
         System.arraycopy(elementData, index, elementData, index + 1,
                          size - index);
+        // 设定目标位置的值
         elementData[index] = element;
+        // 数组使用长度 + 1
         size++;
     }
 
@@ -487,21 +548,28 @@ public class ArrayList<E> extends AbstractList<E>
      * Removes the element at the specified position in this list.
      * Shifts any subsequent elements to the left (subtracts one from their
      * indices).
+     * // 移除指定位置的元素
      *
      * @param index the index of the element to be removed
      * @return the element that was removed from the list
      * @throws IndexOutOfBoundsException {@inheritDoc}
      */
     public E remove(int index) {
+        // 检查交表是否越界
         rangeCheck(index);
 
+        // 因为不涉及到自主扩容，所以需要手动添加一次 操作计数
         modCount++;
+        // 获取旧数据
         E oldValue = elementData(index);
 
+        // 计算删除位置后面的长度
         int numMoved = size - index - 1;
         if (numMoved > 0)
             System.arraycopy(elementData, index+1, elementData, index,
                              numMoved);
+
+        // 去除该对象的在这里的引用，可以让GC回收
         elementData[--size] = null; // clear to let GC do its work
 
         return oldValue;
@@ -516,14 +584,17 @@ public class ArrayList<E> extends AbstractList<E>
      * (if such an element exists).  Returns <tt>true</tt> if this list
      * contained the specified element (or equivalently, if this list
      * changed as a result of the call).
+     * 删除一个元素
      *
      * @param o element to be removed from this list, if present
      * @return <tt>true</tt> if this list contained the specified element
      */
     public boolean remove(Object o) {
+        // 因为数组中可能有null对象，所以对空进行处理。应为数组以及这个对象都有可能会为空，不能直接使用equals方法
         if (o == null) {
             for (int index = 0; index < size; index++)
                 if (elementData[index] == null) {
+                    // 移除该位置的数据
                     fastRemove(index);
                     return true;
                 }
@@ -540,6 +611,7 @@ public class ArrayList<E> extends AbstractList<E>
     /*
      * Private remove method that skips bounds checking and does not
      * return the value removed.
+     * 快速删除，与删除指定位置的逻辑相同。只不过这里没有角标越界判断以及返回被删除的对象
      */
     private void fastRemove(int index) {
         modCount++;
@@ -553,14 +625,18 @@ public class ArrayList<E> extends AbstractList<E>
     /**
      * Removes all of the elements from this list.  The list will
      * be empty after this call returns.
+     * 清除该数组的数据
      */
     public void clear() {
+        // 操作计数 + 1
         modCount++;
 
         // clear to let GC do its work
+        // 遍历数组，断开对象的引用
         for (int i = 0; i < size; i++)
             elementData[i] = null;
 
+        // 重置当前使用的长度
         size = 0;
     }
 
@@ -572,17 +648,24 @@ public class ArrayList<E> extends AbstractList<E>
      * is in progress.  (This implies that the behavior of this call is
      * undefined if the specified collection is this list, and this
      * list is nonempty.)
+     * 添加一个数组
      *
      * @param c collection containing elements to be added to this list
      * @return <tt>true</tt> if this list changed as a result of the call
      * @throws NullPointerException if the specified collection is null
      */
     public boolean addAll(Collection<? extends E> c) {
+        // 将数组转换为数组
         Object[] a = c.toArray();
+        // 新数组的长度
         int numNew = a.length;
+        // 新数组长度为原数组长度加旧数组的长度，同时操作计数 + 1;
         ensureCapacityInternal(size + numNew);  // Increments modCount
+        // 拷贝一个新的数组
         System.arraycopy(a, 0, elementData, size, numNew);
+        // 当前数组长度 = 原数组长度 + 新数组长度
         size += numNew;
+        // 如果原数组长度为0，则表示并没有添加 所以返回false
         return numNew != 0;
     }
 
@@ -593,6 +676,7 @@ public class ArrayList<E> extends AbstractList<E>
      * the right (increases their indices).  The new elements will appear
      * in the list in the order that they are returned by the
      * specified collection's iterator.
+     * 在指定位置添加一个集合
      *
      * @param index index at which to insert the first element from the
      *              specified collection
@@ -602,8 +686,10 @@ public class ArrayList<E> extends AbstractList<E>
      * @throws NullPointerException if the specified collection is null
      */
     public boolean addAll(int index, Collection<? extends E> c) {
+        // 角标越界检查
         rangeCheckForAdd(index);
 
+        // 将新数组
         Object[] a = c.toArray();
         int numNew = a.length;
         ensureCapacityInternal(size + numNew);  // Increments modCount
@@ -651,6 +737,7 @@ public class ArrayList<E> extends AbstractList<E>
      * runtime exception.  This method does *not* check if the index is
      * negative: It is always used immediately prior to an array access,
      * which throws an ArrayIndexOutOfBoundsException if index is negative.
+     * 校验操作的位置是否越界，为什么不判断负数？？？？？
      */
     private void rangeCheck(int index) {
         if (index >= size)
@@ -659,8 +746,10 @@ public class ArrayList<E> extends AbstractList<E>
 
     /**
      * A version of rangeCheck used by add and addAll.
+     * 检查添加时是否角标越界
      */
     private void rangeCheckForAdd(int index) {
+        // 添加方法的角标越界方法
         if (index > size || index < 0)
             throw new IndexOutOfBoundsException(outOfBoundsMsg(index));
     }
