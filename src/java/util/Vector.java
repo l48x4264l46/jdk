@@ -96,6 +96,7 @@ public class Vector<E>
      *
      * @serial
      */
+    // 底层是object数组
     protected Object[] elementData;
 
     /**
@@ -105,6 +106,7 @@ public class Vector<E>
      *
      * @serial
      */
+    // 元素个数
     protected int elementCount;
 
     /**
@@ -115,6 +117,7 @@ public class Vector<E>
      *
      * @serial
      */
+    // 自增长的大小
     protected int capacityIncrement;
 
     /** use serialVersionUID from JDK 1.0.2 for interoperability */
@@ -130,6 +133,7 @@ public class Vector<E>
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
      */
+    // 构造方法，构造参数为 初始化数组大小，以及每次增长的量
     public Vector(int initialCapacity, int capacityIncrement) {
         super();
         if (initialCapacity < 0)
@@ -147,6 +151,7 @@ public class Vector<E>
      * @throws IllegalArgumentException if the specified initial capacity
      *         is negative
      */
+    // 构造方法，构造参数为初始化数组大小
     public Vector(int initialCapacity) {
         this(initialCapacity, 0);
     }
@@ -156,6 +161,7 @@ public class Vector<E>
      * has size {@code 10} and its standard capacity increment is
      * zero.
      */
+    // 默认初始化容器为10
     public Vector() {
         this(10);
     }
@@ -170,6 +176,7 @@ public class Vector<E>
      * @throws NullPointerException if the specified collection is null
      * @since   1.2
      */
+    // 构造方法，参数为一几何对象，可以将该几何变为Vector对象（注意是浅拷贝，更改集合中的数据将会修改该Vector对象中的数据）
     public Vector(Collection<? extends E> c) {
         elementData = c.toArray();
         elementCount = elementData.length;
@@ -191,6 +198,7 @@ public class Vector<E>
      *         a runtime type that can be stored in the specified array
      * @see #toArray(Object[])
      */
+    // 将数据组拷贝到一个新的数组中，使用sync修饰，保证了线程安全
     public synchronized void copyInto(Object[] anArray) {
         System.arraycopy(elementData, 0, anArray, 0, elementCount);
     }
@@ -203,6 +211,7 @@ public class Vector<E>
      * with a smaller one. An application can use this operation to
      * minimize the storage of a vector.
      */
+    // 去除未使用的空数组元素，同样使用sync修饰，是线程安全的
     public synchronized void trimToSize() {
         modCount++;
         int oldCapacity = elementData.length;
@@ -228,6 +237,7 @@ public class Vector<E>
      *
      * @param minCapacity the desired minimum capacity
      */
+    // 扩容方法，下面的扩容与ArrayList的扩容思想是一致的
     public synchronized void ensureCapacity(int minCapacity) {
         if (minCapacity > 0) {
             modCount++;
@@ -286,11 +296,14 @@ public class Vector<E>
      * @param  newSize   the new size of this vector
      * @throws ArrayIndexOutOfBoundsException if the new size is negative
      */
+    // 设置该对象的大小，如果超出，则元素为空
     public synchronized void setSize(int newSize) {
         modCount++;
+        // 如果新的数组大小大于目前的大小，则需要扩容处理
         if (newSize > elementCount) {
             ensureCapacityHelper(newSize);
         } else {
+            // 否则将其他元素的位置设置为空
             for (int i = newSize ; i < elementCount ; i++) {
                 elementData[i] = null;
             }
@@ -305,6 +318,7 @@ public class Vector<E>
      *          data array, kept in the field {@code elementData}
      *          of this vector)
      */
+    // 获取当前容量大小，使用同步锁
     public synchronized int capacity() {
         return elementData.length;
     }
@@ -314,6 +328,7 @@ public class Vector<E>
      *
      * @return  the number of components in this vector
      */
+    // 获取当前使用过的长度
     public synchronized int size() {
         return elementCount;
     }
@@ -325,6 +340,7 @@ public class Vector<E>
      *          no components, that is, its size is zero;
      *          {@code false} otherwise.
      */
+    // 该数组是否为空
     public synchronized boolean isEmpty() {
         return elementCount == 0;
     }
